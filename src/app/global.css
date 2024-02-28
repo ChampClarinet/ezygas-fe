@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "sukhumvit";
+    font-display: swap;
+    font-style: normal;
+    src: local("sukhumvit"),
+      url("/assets/fonts/sukhumvit.woff2") format("woff2"),
+      url("/assets/fonts/sukhumvit.woff") format("woff"),
+      url("/assets/fonts/sukhumvit.ttf") format("truetype");
+  }
+}
+
+@layer primereact {
+}
+
+.swal2-confirm {
+  @apply !bg-current;
+}
+
+.swal2-cancel {
+  @apply !bg-red-700;
+}
