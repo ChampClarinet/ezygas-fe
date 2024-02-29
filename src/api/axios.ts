@@ -7,6 +7,8 @@ import axios, {
 import { getCookie, setCookie, deleteCookie } from "cookies-next";
 import { REFRESH_TOKEN_KEY, USER_TOKEN_KEY } from "@/config/cookies";
 import AuthAPI from "./auth";
+import { resolveErrorResponse } from "@/utils/error";
+import { logout } from "@/utils/auth";
 
 /**
  * Use this axios file to call API instead of using default axios
@@ -54,19 +56,21 @@ const clientInterceptor = (response: AxiosResponse): AxiosResponse => {
 /**
  * This interceptor refreshes the token if the token is invalid or expired and returns the response from axios call
  * @param {AxiosResponse} error - The error object in case of axios call failure
- * @returns {Promise<AxiosResponse>} - The updated axios response after refreshing token
  */
-const onErrorClientInterceptor = async (error: any): Promise<AxiosResponse> => {
+const onErrorClientInterceptor = async (error: any) => {
   const originalRequest = error.config;
   const TOKEN_INVALID_OR_EXPIRED =
     error?.response?.data?.code === "token_not_valid";
   if (TOKEN_INVALID_OR_EXPIRED && !originalRequest._retry) {
     originalRequest._retry = true;
     const newToken = await refreshToken();
-    if (!newToken) logout();
+    if (!newToken) {
+      await logout();
+      typeof window !== "undefined" && window.open("/login", "_self");
+    }
     return axios(originalRequest);
   }
-  return Promise.reject(error);
+  await resolveErrorResponse(error);
 };
 
 interface InjectInterceptorsParams {
@@ -85,7 +89,7 @@ interface InjectInterceptorsParams {
   /**
    * The function that adds an interceptor for errors
    */
-  errorInterceptor?: (e: any) => Promise<AxiosResponse>;
+  errorInterceptor?: (e: any) => Promise<any>;
 }
 /**
  * @param {InjectInterceptorsParams} options - Options for interceptors
@@ -181,12 +185,4 @@ const refreshToken = async () => {
     }
     throw error;
   }
-};
-
-const logout = async () => {
-  const refreshToken = getCookie(REFRESH_TOKEN_KEY);
-  if (refreshToken) await AuthAPI.logoutAPI(refreshToken);
-  deleteCookie(USER_TOKEN_KEY);
-  deleteCookie(REFRESH_TOKEN_KEY);
-  typeof window !== "undefined" && window.open("/login", "_self");
 };

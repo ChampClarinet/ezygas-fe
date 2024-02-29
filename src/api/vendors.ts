@@ -1,6 +1,6 @@
 import axios from "./axios";
 import { ApiResponse } from "@/types/general";
-import { Time } from "@/utils/calendar";
+import { Time } from "@cantabile/date-helper";
 
 const PATH = "/vendors/";
 
