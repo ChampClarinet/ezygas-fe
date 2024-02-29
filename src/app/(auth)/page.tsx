@@ -4,11 +4,7 @@ import Global from "@/components/globals";
 
 const HomePage: FC = (props) => {
   console.log({ props });
-  return (
-    <Global>
-      <h1 className="text-current">Home page</h1>
-    </Global>
-  );
+  return <h1 className="text-current">Home page</h1>;
 };
 
 export default HomePage;

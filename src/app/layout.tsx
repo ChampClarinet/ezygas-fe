@@ -2,6 +2,7 @@
 import "primereact/resources/themes/lara-light-blue/theme.css";
 import "primeicons/primeicons.css";
 import "./global.css";
+import Global from "@/components/globals";
 
 const env = process.env.NODE_ENV;
 
@@ -40,7 +41,7 @@ export default function RootLayout({
         <meta name="robots" content="index, follow" />
       </head>
       <body>
-        {children}
+        <Global>{children}</Global>
       </body>
     </html>
   );

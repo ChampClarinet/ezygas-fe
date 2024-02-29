@@ -4,11 +4,9 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
-import AuthUtils from "@/utils/auth";
-import Token from "@/utils/token";
-
-const lastRequestTimestamps: Record<string, any> = {};
-const debounceTimeout = 1000;
+import { getCookie, setCookie, deleteCookie } from "cookies-next";
+import { REFRESH_TOKEN_KEY, USER_TOKEN_KEY } from "@/config/cookies";
+import AuthAPI from "./auth";
 
 /**
  * Use this axios file to call API instead of using default axios
@@ -24,36 +22,22 @@ const TIMEOUT = 6e4;
  * @returns {AxiosRequestConfig} - The updated axios request configuration
  */
 const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
-  const overrideToken = config.data;
-  console.log("interceptor", { overrideToken });
-  const token = overrideToken || Token.getUserToken();
-  if (token) {
-    config.headers = {
-      ...config.headers,
-      "Cache-Control": "no-cache",
-      authorization: `Bearer ${token}`,
-    };
+  if (typeof document == "undefined") {
+    const overrideToken = config.data as string;
+    console.log("interceptor", { overrideToken });
+
+    const token =
+      overrideToken || (getCookie(USER_TOKEN_KEY) as string | undefined);
+    if (token) {
+      config.headers = {
+        ...config.headers,
+        "Cache-Control": "no-cache",
+        authorization: `Bearer ${token}`,
+      };
+    }
   }
 
-  const { url, params, data } = config;
-
-  // Construct a unique identifier for the request including URL, query parameters, and request body
-  const requestIdentifier = `${url}?${JSON.stringify(params)}${JSON.stringify(
-    data
-  )}`;
-
-  // Check if a request has been sent to the same URL within the debounce timeout
-  if (
-    requestIdentifier &&
-    lastRequestTimestamps[requestIdentifier] &&
-    Date.now() - lastRequestTimestamps[requestIdentifier] < debounceTimeout
-  ) {
-    // Cancel the request if it's within the debounce timeout
-    throw new RequestThrottledError();
-  }
-
-  // Update the last request timestamp for the URL
-  if (url) lastRequestTimestamps[requestIdentifier] = Date.now();
+  throttleDuplicateRequest(config);
 
   return config;
 };
@@ -78,7 +62,8 @@ const onErrorClientInterceptor = async (error: any): Promise<AxiosResponse> => {
     error?.response?.data?.code === "token_not_valid";
   if (TOKEN_INVALID_OR_EXPIRED && !originalRequest._retry) {
     originalRequest._retry = true;
-    AuthUtils.doRefreshToken();
+    const newToken = await refreshToken();
+    if (!newToken) logout();
     return axios(originalRequest);
   }
   return Promise.reject(error);
@@ -147,6 +132,31 @@ export default withInterceptors({
   errorInterceptor: onErrorClientInterceptor,
 });
 
+const lastRequestTimestamps: Record<string, any> = {};
+const debounceTimeout = 1000;
+
+export const throttleDuplicateRequest = (config: AxiosRequestConfig) => {
+  const { url, params, data } = config;
+
+  // Construct a unique identifier for the request including URL, query parameters, and request body
+  const requestIdentifier = `${url}?${JSON.stringify(params)}${JSON.stringify(
+    data
+  )}`;
+
+  // Check if a request has been sent to the same URL within the debounce timeout
+  if (
+    requestIdentifier &&
+    lastRequestTimestamps[requestIdentifier] &&
+    Date.now() - lastRequestTimestamps[requestIdentifier] < debounceTimeout
+  ) {
+    // Cancel the request if it's within the debounce timeout
+    throw new RequestThrottledError();
+  }
+
+  // Update the last request timestamp for the URL
+  if (url) lastRequestTimestamps[requestIdentifier] = Date.now();
+};
+
 export class RequestThrottledError extends Error {
   constructor() {
     super(
@@ -154,3 +164,29 @@ export class RequestThrottledError extends Error {
     );
   }
 }
+
+const refreshToken = async () => {
+  try {
+    const refreshToken = getCookie(REFRESH_TOKEN_KEY);
+    if (!refreshToken) return null;
+    const { access } = await AuthAPI.refreshTokenAPI(refreshToken);
+    setCookie(USER_TOKEN_KEY, access);
+    return access;
+  } catch (error) {
+    if (
+      axios.isAxiosError(error) &&
+      (error.response?.status == 401 || error.response?.status == 403)
+    ) {
+      return null;
+    }
+    throw error;
+  }
+};
+
+const logout = async () => {
+  const refreshToken = getCookie(REFRESH_TOKEN_KEY);
+  if (refreshToken) await AuthAPI.logoutAPI(refreshToken);
+  deleteCookie(USER_TOKEN_KEY);
+  deleteCookie(REFRESH_TOKEN_KEY);
+  typeof window !== "undefined" && window.open("/login", "_self");
+};
