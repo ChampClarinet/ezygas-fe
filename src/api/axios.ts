@@ -58,6 +58,9 @@ const clientInterceptor = (response: AxiosResponse): AxiosResponse => {
  * @param {AxiosResponse} error - The error object in case of axios call failure
  */
 const onErrorClientInterceptor = async (error: any) => {
+  const isThrottleError = error instanceof RequestThrottledError;
+  if (isThrottleError) return;
+
   const originalRequest = error.config;
   const TOKEN_INVALID_OR_EXPIRED =
     error?.response?.data?.code === "token_not_valid";
