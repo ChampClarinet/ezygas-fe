@@ -145,7 +145,10 @@ const LoginPage: FC = () => {
           <Divider />
           <Button
             link
-            onClick={() => window.open("/register", "_self")}
+            onClick={(e) => {
+              e.preventDefault();
+              window.open("/register", "_self");
+            }}
             baseProps={{
               className: "mx-auto",
             }}

@@ -1,4 +1,3 @@
-
 /**
  * Generates color from input string
  * @param string input

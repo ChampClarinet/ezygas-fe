@@ -1,17 +1,18 @@
 "use client";
-import { FC, PropsWithChildren, Suspense, useEffect } from "react";
+import { FC, PropsWithChildren, Suspense } from "react";
 import { PrimeReactProvider } from "primereact/api";
 import { GlobalStyle } from "@/styles/global";
 import pt from "@/styles/passthrough";
+import { ToastContextProvider } from "@/toast.context";
 
 const Global: FC<PropsWithChildren> = ({ children }) => {
-  console.log("global runs");
-  useEffect(() => {}, []);
   return (
     <Suspense fallback={null}>
       <PrimeReactProvider value={{ pt }}>
-        <GlobalStyle />
-        {children}
+        <ToastContextProvider>
+          <GlobalStyle />
+          {children}
+        </ToastContextProvider>
       </PrimeReactProvider>
     </Suspense>
   );
