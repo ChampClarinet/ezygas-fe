@@ -39,6 +39,7 @@ export default function RootLayout({
         Startup thailand league,Startup thailand u league,Startup silpakorn,Su startup,สตาร์ทอัพศิลปากร,สตาร์ทอัพนักศึกษา"
         />
         <meta name="robots" content="index, follow" />
+        <link rel="icon" href="/favicon.ico" />
       </head>
       <body>
         <Global>{children}</Global>
