@@ -1,8 +1,10 @@
-import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { REFRESH_TOKEN_KEY, USER_TOKEN_KEY } from "@/config/cookies";
+import {
+  doRefreshTokenServerside,
+  checkTokenIsExpiresServerside,
+} from "@/utils/auth";
 import AuthAPI from "./api/auth";
-import { TokenExpiresError } from "./errors";
 
 const publicRoutes = ["/login", "/register", "/pending"];
 
@@ -84,7 +86,7 @@ const handleAuthorizationCheck = async (
     };
   }
 
-  const isTokenExpired = await checkTokenIsExpires(accessToken);
+  const isTokenExpired = await checkTokenIsExpiresServerside(accessToken);
   if (!isTokenExpired) {
     return {
       code: "PASS",
@@ -96,7 +98,7 @@ const handleAuthorizationCheck = async (
   const refreshToken = req.cookies.get(REFRESH_TOKEN_KEY)?.value;
 
   const newAccessToken = refreshToken
-    ? await doRefreshToken(refreshToken)
+    ? await doRefreshTokenServerside(refreshToken)
     : null;
   if (!newAccessToken) {
     return {
@@ -111,33 +113,6 @@ const handleAuthorizationCheck = async (
     oldAccessToken: accessToken,
     newAccessToken,
   };
-};
-
-const checkTokenIsExpires = async (accessToken: string) => {
-  try {
-    await AuthAPI.verifyTokenAPIServerside(accessToken);
-    return false;
-  } catch (error) {
-    if (error instanceof TokenExpiresError) return true;
-    throw error;
-  }
-};
-
-const doRefreshToken = async (refreshToken: string) => {
-  try {
-    const { access: newAccessToken } = await AuthAPI.refreshTokenAPIServerside(
-      refreshToken
-    );
-    return newAccessToken;
-  } catch (error) {
-    if (
-      axios.isAxiosError(error) &&
-      (error.response?.status == 401 || error.response?.status == 403)
-    ) {
-      return null;
-    }
-    throw error;
-  }
 };
 
 const getRedirectUrl = (req: NextRequest, redirectionUrl: string) => {

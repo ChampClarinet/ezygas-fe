@@ -19,7 +19,6 @@ export interface AuthFailedResponse {
 const AuthAPI = {
   /**
    * Login API
-   * For real usage, use login from AuthUtils to make it complete flow
    * @param username username for login
    * @param password password for login
    * @returns response data of access token and refresh token in LoginResponse format
@@ -37,7 +36,6 @@ const AuthAPI = {
 
   /**
    * Logout API
-   * For real usage, use logout from AuthUtils to make it complete flow
    * @returns boolean indicating success of logout API request
    */
   logoutAPI: async (refreshToken: string): Promise<boolean> => {

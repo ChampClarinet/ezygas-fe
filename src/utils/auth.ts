@@ -1,8 +1,8 @@
-import { AxiosResponse } from "axios";
+import axios, { AxiosResponse } from "axios";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import AuthAPI from "@/api/auth";
 import { REFRESH_TOKEN_KEY, USER_TOKEN_KEY } from "@/config/cookies";
-import { RegistrationError } from "@/errors";
+import { RegistrationError, TokenExpiresError } from "@/errors";
 import { RegisterDTO } from "@/types/user";
 
 export const login = async (username: string, password: string) => {
@@ -58,5 +58,32 @@ export const register = async (
       throw new RegistrationError(errResponse.data.message);
     }
     throw new RegistrationError();
+  }
+};
+
+export const checkTokenIsExpiresServerside = async (accessToken: string) => {
+  try {
+    await AuthAPI.verifyTokenAPIServerside(accessToken);
+    return false;
+  } catch (error) {
+    if (error instanceof TokenExpiresError) return true;
+    throw error;
+  }
+};
+
+export const doRefreshTokenServerside = async (refreshToken: string) => {
+  try {
+    const { access: newAccessToken } = await AuthAPI.refreshTokenAPIServerside(
+      refreshToken
+    );
+    return newAccessToken;
+  } catch (error) {
+    if (
+      axios.isAxiosError(error) &&
+      (error.response?.status == 401 || error.response?.status == 403)
+    ) {
+      return null;
+    }
+    throw error;
   }
 };
