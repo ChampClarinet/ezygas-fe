@@ -4,10 +4,9 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
-import { getCookie, setCookie, deleteCookie } from "cookies-next";
+import { getCookie, setCookie } from "cookies-next";
 import { REFRESH_TOKEN_KEY, USER_TOKEN_KEY } from "@/config/cookies";
 import AuthAPI from "./auth";
-import { resolveErrorResponse } from "@/utils/error";
 import { logout } from "@/utils/auth";
 
 /**
@@ -24,24 +23,19 @@ const TIMEOUT = 6e4;
  * @returns {AxiosRequestConfig} - The updated axios request configuration
  */
 const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
-  if (typeof document == "undefined") {
-    const overrideToken = config.data as string;
-    console.log("interceptor", { overrideToken });
-
-    const token =
-      overrideToken || (getCookie(USER_TOKEN_KEY) as string | undefined);
-    if (token) {
-      config.headers = {
-        ...config.headers,
-        "Cache-Control": "no-cache",
-        authorization: `Bearer ${token}`,
-      };
-    }
+  const token = getCookie(USER_TOKEN_KEY) as string | undefined;
+  if (token) {
+    config.headers = {
+      ...config.headers,
+      "Cache-Control": "no-cache",
+      authorization: `Bearer ${token}`,
+    };
   }
 
+  const controller = new AbortController();
   throttleDuplicateRequest(config);
 
-  return config;
+  return { ...config, signal: controller.signal };
 };
 
 /**
@@ -58,9 +52,6 @@ const clientInterceptor = (response: AxiosResponse): AxiosResponse => {
  * @param {AxiosResponse} error - The error object in case of axios call failure
  */
 const onErrorClientInterceptor = async (error: any) => {
-  const isThrottleError = error instanceof RequestThrottledError;
-  if (isThrottleError) return;
-
   const originalRequest = error.config;
   const TOKEN_INVALID_OR_EXPIRED =
     error?.response?.data?.code === "token_not_valid";
@@ -73,7 +64,7 @@ const onErrorClientInterceptor = async (error: any) => {
     }
     return axios(originalRequest);
   }
-  await resolveErrorResponse(error);
+  return Promise.reject(error);
 };
 
 interface InjectInterceptorsParams {
@@ -157,20 +148,12 @@ export const throttleDuplicateRequest = (config: AxiosRequestConfig) => {
     Date.now() - lastRequestTimestamps[requestIdentifier] < debounceTimeout
   ) {
     // Cancel the request if it's within the debounce timeout
-    throw new RequestThrottledError();
+    throw new axios.Cancel();
   }
 
   // Update the last request timestamp for the URL
   if (url) lastRequestTimestamps[requestIdentifier] = Date.now();
 };
-
-export class RequestThrottledError extends Error {
-  constructor() {
-    super(
-      "Request throttled: Too many requests to the same URL within a short period."
-    );
-  }
-}
 
 const refreshToken = async () => {
   try {

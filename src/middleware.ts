@@ -2,6 +2,7 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { REFRESH_TOKEN_KEY, USER_TOKEN_KEY } from "@/config/cookies";
 import AuthAPI from "./api/auth";
+import { TokenExpiresError } from "./errors";
 
 const publicRoutes = ["/login", "/register", "/pending"];
 
@@ -49,7 +50,7 @@ const authenticatedPagesMiddleware = async (req: NextRequest) => {
   const { code, newAccessToken } = await handleAuthorizationCheck(req);
   if (code == "FAIL") {
     const refreshToken = req.cookies.get(REFRESH_TOKEN_KEY)?.value;
-    if (refreshToken) await AuthAPI.logoutAPI(refreshToken);
+    if (refreshToken) await AuthAPI.logoutAPIServerside(refreshToken);
     const response = getRedirectUrl(req, "/login");
     response.cookies.delete(USER_TOKEN_KEY);
     response.cookies.delete(REFRESH_TOKEN_KEY);
@@ -114,18 +115,18 @@ const handleAuthorizationCheck = async (
 
 const checkTokenIsExpires = async (accessToken: string) => {
   try {
-    await AuthAPI.verifyTokenAPI(accessToken, false);
+    await AuthAPI.verifyTokenAPIServerside(accessToken);
     return false;
   } catch (error) {
-    return true;
+    if (error instanceof TokenExpiresError) return true;
+    throw error;
   }
 };
 
 const doRefreshToken = async (refreshToken: string) => {
   try {
-    const { access: newAccessToken } = await AuthAPI.refreshTokenAPI(
-      refreshToken,
-      false
+    const { access: newAccessToken } = await AuthAPI.refreshTokenAPIServerside(
+      refreshToken
     );
     return newAccessToken;
   } catch (error) {

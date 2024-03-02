@@ -1,6 +1,9 @@
 import { ApiResponse } from "@/types/general";
 import axios from "./axios";
 import { Menu, SubMenu, WeekdayDTO, Misc } from "@/types/misc";
+import { UnauthorizedError } from "@/errors";
+
+const BASE_URL_API = (process.env.NEXT_PUBLIC_URL_API || "") + "/api";
 
 const MasterAPI = {
   fetchBrandsList: async () => {
@@ -40,11 +43,28 @@ const MasterAPI = {
     return await axios.get<ApiResponse<WeekdayDTO[]>>(path, { params });
   },
 
-  fetchMenu: async (overrideToken?: string) => {
+  fetchMenu: async () => {
     const path = "/master/menu/";
-    return await axios.get<ApiResponse<MenuResponse>>(path, {
-      data: overrideToken || undefined,
+    return await axios.get<ApiResponse<MenuResponse>>(path);
+  },
+
+  fetchMenuServerside: async (token: string) => {
+    const response = await fetch(BASE_URL_API + "/master/menu/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
     });
+    if (response.status >= 400) {
+      throw new UnauthorizedError({
+        message: "error fetching menu",
+        status: response.status,
+      });
+    }
+    const responseData: ApiResponse<MenuResponse> = await response.json();
+    return responseData.data;
   },
 };
 

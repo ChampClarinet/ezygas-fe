@@ -107,12 +107,13 @@ const buttonPT: ButtonPassThroughOptions = {
     //? Sizing
     classes = clsx(
       classes,
-      props.size == null && ["px-4", "py-3", "text-base", "w-[140px]"],
-      props.size == "small" && ["text-xs", "py-2", "px-3", "w-[100px]"],
-      props.size == "large" && ["text-xl", "py-3", "px-4", "w-[160px]"],
+      props.size == null && ["px-4", "py-3", "text-base", "basis-[140px]"],
+      props.size == "small" && ["text-xs", "py-2", "px-3", "basis-[100px]"],
+      props.size == "large" && ["text-xl", "py-3", "px-4", "basis-[160px]"],
       "grow-0",
       "shrink",
-      "min-w-fit"
+      "min-w-fit",
+      "max-h-[52px]"
     );
 
     if (props.iconPos == "top" || props.iconPos == "bottom") {

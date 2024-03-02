@@ -1,5 +1,6 @@
 "use client";
 import { useContext } from "react";
+import { NoToastContextError } from "@/errors";
 import { ToastContext } from "@/toast.context";
 
 export const useToastContext = () => {
@@ -9,9 +10,3 @@ export const useToastContext = () => {
 
   return context;
 };
-
-class NoToastContextError extends Error {
-  constructor() {
-    super("No ToastContext found");
-  }
-}

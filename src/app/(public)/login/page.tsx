@@ -24,7 +24,6 @@ const LoginPage: FC = () => {
 
   const {
     handleSubmit,
-    register,
     control,
     formState: { isValid },
   } = useForm<LoginForm>({

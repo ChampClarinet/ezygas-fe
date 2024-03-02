@@ -1,7 +1,8 @@
 import { AxiosResponse } from "axios";
-import { getCookie, setCookie } from "cookies-next";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import AuthAPI from "@/api/auth";
 import { REFRESH_TOKEN_KEY, USER_TOKEN_KEY } from "@/config/cookies";
+import { RegistrationError } from "@/errors";
 import { RegisterDTO } from "@/types/user";
 
 export const login = async (username: string, password: string) => {
@@ -23,6 +24,8 @@ export const login = async (username: string, password: string) => {
 export const logout = async () => {
   const refreshToken = getCookie(REFRESH_TOKEN_KEY);
   const isOk = refreshToken ? await AuthAPI.logoutAPI(refreshToken) : false;
+  deleteCookie(USER_TOKEN_KEY);
+  deleteCookie(REFRESH_TOKEN_KEY);
   if (!isOk) throw new Error(`Something's wrong with logout api`);
   return true;
 };
@@ -57,9 +60,3 @@ export const register = async (
     throw new RegistrationError();
   }
 };
-
-export class RegistrationError extends Error {
-  constructor(public message = `Something's wrong with register api`) {
-    super(message);
-  }
-}

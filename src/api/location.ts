@@ -5,10 +5,11 @@ const baseURL = "/location";
 
 const LocationAPI = {
   fetchProvinces: async () => {
-    const data = (
-      await axios.get<ApiResponse<Location[]>>(`${baseURL}/provinces/`)
-    ).data;
-    return data.data;
+    const response = await axios.get<ApiResponse<Location[]>>(
+      `${baseURL}/provinces/`
+    );
+    const data = response.data.data;
+    return data;
   },
 
   fetchDistricts: async (provinceId?: number) => {

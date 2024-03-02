@@ -9,7 +9,7 @@ const LoginLayout: FC<PropsWithChildren> = ({ children }) => {
 
 export default LoginLayout;
 
-export const Container = styled.div.attrs({
+const Container = styled.div.attrs({
   className: clsx(
     "login-layout",
     "flex",

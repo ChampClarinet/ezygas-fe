@@ -27,9 +27,11 @@
     "sass": "^1.71.1",
     "styled-components": "^6.1.8",
     "sweetalert2": "^11.10.5",
+    "swr": "^2.2.5",
     "zustand": "^4.5.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/node": "^20",
     "@types/papaparse": "^5.3.14",
     "@types/react": "^18",

@@ -13,4 +13,4 @@ const Suggestions: FC = () => {
   );
 };
 
-export default Suggestions
+export default Suggestions;
