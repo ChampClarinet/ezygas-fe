@@ -12,9 +12,6 @@ import { TokenExpiresError, UnauthorizedError } from "@/errors";
 import { User } from "@/types/user";
 
 const isProduction = process.env.NODE_ENV === "production";
-const unauthPlaceholder = (msg?: string) => (
-  <h1>error not authorized {isProduction ? msg : ""}</h1>
-);
 
 export interface WithServerData {
   myVendor: Vendor;
@@ -25,9 +22,13 @@ export interface WithServerData {
 interface AuthedPageLayoutProps extends PropsWithChildren {}
 const AuthedPageLayout: FC<AuthedPageLayoutProps> = async ({ children }) => {
   const cookie = cookies();
-  let accessToken = cookie.get(USER_TOKEN_KEY)?.value;
-  if (!accessToken) return unauthPlaceholder("access");
   try {
+    let accessToken = cookie.get(USER_TOKEN_KEY)?.value;
+    if (!accessToken) {
+      throw new UnauthorizedError({
+        message: "no access token",
+      });
+    }
     //? Verify and refresh
     try {
       await AuthAPI.verifyTokenAPIServerside(accessToken);
@@ -48,7 +49,6 @@ const AuthedPageLayout: FC<AuthedPageLayoutProps> = async ({ children }) => {
       UserAPI.fetchMyAccountServerside(accessToken),
       MasterAPI.fetchMenuServerside(accessToken),
     ]);
-    console.log({ vendor, user, menus });
     return (
       <MainLayout myVendor={vendor} user={user} menus={menus}>
         {children}
@@ -59,6 +59,7 @@ const AuthedPageLayout: FC<AuthedPageLayoutProps> = async ({ children }) => {
       error instanceof UnauthorizedError ||
       error instanceof TokenExpiresError
     ) {
+      if (!isProduction) console.warn("unauthorized: " + error);
       redirect("/login", RedirectType.replace);
     }
     throw error;

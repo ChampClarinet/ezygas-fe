@@ -1,9 +1,3 @@
-export class TokenExpiresError extends Error {
-  constructor() {
-    super("Token is expired");
-  }
-}
-
 export class NoToastContextError extends Error {
   constructor() {
     super("No ToastContext found");
@@ -19,6 +13,12 @@ export class UnauthorizedError extends Error {
 
   toString() {
     return JSON.stringify(this.data);
+  }
+}
+
+export class TokenExpiresError extends UnauthorizedError {
+  constructor() {
+    super({ message: "Token is expired" });
   }
 }
 
