@@ -19,9 +19,9 @@ import { useSettingsStore } from "@/stores/settings";
 import { logout } from "@/utils/auth";
 import { resolveErrorResponse } from "@/utils/error";
 import Zoomer from "./zoomer";
-// import FixCostDialog from "@/modules/FixCost";
-// import DialyReviewDialog from "@/components/fragments/daily.modal";
-// import { shouldShowDailyStockReviewModal } from "@/utils/schedule";
+import FixCostDialog from "@/modules/fixcost";
+import DialyReviewDialog from "@/modules/daily.modal";
+import { shouldShowDailyStockReviewModal } from "@/utils/schedule";
 
 import Button from "@/components/common/button";
 
@@ -38,9 +38,9 @@ const MenuGroup: FC = () => {
   const hideButtons = useBreakpoint(920);
   const hideName = useBreakpoint(700);
 
-  const [fixCostDialog, setFixCostDialog] = useState(false);
+  const [isFixCostDialogOpen, setFixCostDialogOpen] = useState(false);
   const handleToggleFixCostDialog = useCallback(() => {
-    setFixCostDialog((prev) => !prev);
+    setFixCostDialogOpen((prev) => !prev);
   }, []);
 
   const {
@@ -116,8 +116,8 @@ const MenuGroup: FC = () => {
 
   return (
     <div className="flex h-full gap-4 items-center">
-      {/* <FixCostDialog
-        isOpen={fixCostDialog}
+      <FixCostDialog
+        isOpen={isFixCostDialogOpen}
         onToggle={handleToggleFixCostDialog}
       />
       <DialyReviewDialog
@@ -127,7 +127,7 @@ const MenuGroup: FC = () => {
           vendor?.last_login || null,
           latestReview
         )}
-      /> */}
+      />
       <div
         className={clsx(
           "buttons",
