@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import AuthAPI from "@/api/auth";
 import { REFRESH_TOKEN_KEY, USER_TOKEN_KEY } from "@/config/cookies";
-import { RegistrationError, TokenExpiresError } from "@/errors";
+import { TokenExpiresError } from "@/errors";
 import { RegisterDTO } from "@/types/user";
 
 export const login = async (username: string, password: string) => {
@@ -60,6 +60,12 @@ export const register = async (
     throw new RegistrationError();
   }
 };
+
+export class RegistrationError extends Error {
+  constructor(public message = `Something's wrong with register api`) {
+    super(message);
+  }
+}
 
 export const checkTokenIsExpiresServerside = async (accessToken: string) => {
   try {

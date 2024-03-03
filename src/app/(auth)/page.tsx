@@ -1,8 +1,9 @@
 "use client";
+import CustomersList from "@/modules/customers-list";
 import { FC } from "react";
 
 const HomePage: FC = (props) => {
-  return <h1 className="text-current">Home page</h1>;
+  return <CustomersList mode="ORDER" />;
 };
 
 export default HomePage;

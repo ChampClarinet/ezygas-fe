@@ -27,7 +27,6 @@
     "sass": "^1.71.1",
     "styled-components": "^6.1.8",
     "sweetalert2": "^11.10.5",
-    "swr": "^2.2.5",
     "zustand": "^4.5.1"
   },
   "devDependencies": {

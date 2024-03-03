@@ -7,6 +7,7 @@ import AuthAPI from "@/api/auth";
 import MasterAPI, { MenuResponse } from "@/api/master";
 import UserAPI from "@/api/user";
 import VendorsAPI, { Vendor } from "@/api/vendors";
+import { setAccessToken } from "@/app/actions";
 import MainLayout from "@/components/globals/mainlayout";
 import { TokenExpiresError, UnauthorizedError } from "@/errors";
 import { User } from "@/types/user";
@@ -39,7 +40,7 @@ const AuthedPageLayout: FC<AuthedPageLayoutProps> = async ({ children }) => {
         const { access: newToken } = await AuthAPI.refreshTokenAPIServerside(
           refreshToken
         );
-        cookie.set(USER_TOKEN_KEY, newToken);
+        setAccessToken(newToken);
         accessToken = newToken;
       } else throw error;
     }

@@ -22,8 +22,14 @@ export class TokenExpiresError extends UnauthorizedError {
   }
 }
 
-export class RegistrationError extends Error {
-  constructor(public message = `Something's wrong with register api`) {
-    super(message);
+export class NullParamsException extends Error {
+  constructor(trace?: any) {
+    super("Params cannot be null" + trace ? `: ${trace}` : "");
+  }
+}
+
+export class TooManyRequestsAtOnceError extends Error {
+  constructor() {
+    super("Too many requests at once");
   }
 }

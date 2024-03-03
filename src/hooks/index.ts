@@ -9,7 +9,9 @@ export const useListen = <T>(
   useEffect(() => {
     const equal =
       JSON.stringify(prevObjectRef.current) === JSON.stringify(objectToListen);
-    if (!equal) onChange(objectToListen);
-    prevObjectRef.current = objectToListen;
+    if (!equal) {
+      onChange(objectToListen);
+      prevObjectRef.current = objectToListen;
+    }
   }, [objectToListen, onChange]);
 };
