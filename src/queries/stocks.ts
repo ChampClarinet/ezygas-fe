@@ -15,16 +15,14 @@ export const useStocksList = (params: UseStocksList) => {
   const fetchFn = useCallback(async () => {
     let response = await StocksAPI.fetchStocksList();
     if (activeOnly) response = response.filter(({ is_active }) => is_active);
+    onStockChanges && onStockChanges(response);
     return response;
-  }, [activeOnly]);
+  }, [activeOnly, onStockChanges]);
 
   const { data, error, isLoading, isValidating, refetch } = useQuery<Stock[]>({
     fetcher: fetchFn,
   });
 
-  useEffect(() => {
-    if (onStockChanges && data != null) onStockChanges(data);
-  }, [data, onStockChanges]);
   return {
     stocksList: data || [],
     error,

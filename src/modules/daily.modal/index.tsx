@@ -36,9 +36,9 @@ const DailyReviewModal: FC<DialyReviewProps> = (props) => {
 
   const useStocksProps = useStocksList({
     activeOnly: true,
-    onStockChanges: () => {
+    onStockChanges: (stocks) => {
       setEditedStock(
-        stocksList.map(({ id, price }) => ({
+        stocks.map(({ id, price }) => ({
           id,
           price: "" + price,
           oldPrice: price,
