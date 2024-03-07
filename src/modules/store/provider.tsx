@@ -10,17 +10,11 @@ import {
 } from "react";
 import { UseFormReturn, useForm } from "react-hook-form";
 import DateHelper, { Time } from "@cantabile/date-helper";
-import MasterAPI from "@/api/master";
-import VendorsAPI, {
-  UpdateVendorDTO,
-  Vendor,
-  WorkTime,
-  WorkTimeDTO,
-} from "@/api/vendors";
-import { useFetch } from "@/hooks/fetch";
+import VendorsAPI, { UpdateVendorDTO, Vendor, WorkTime } from "@/api/vendors";
+import { useDayCloses, useWorkTime } from "@/queries/vendors";
 import useGlobalStore from "@/stores/global";
 import { Nullable } from "@/types/general";
-import { WeekdayDTO } from "@/types/misc";
+import { useDaysList } from "@/queries/general";
 
 export interface VendorForm {
   name_th: string;
@@ -79,26 +73,11 @@ const StorePageProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const hasErrors = useMemo(() => Object.keys(errors).length > 0, [errors]);
 
-  const dayClosesQuery = useFetch<string[]>({
-    fetcher: async () => {
-      const response = await VendorsAPI.fetchDayClosesAPI();
-      return response.data.data;
-    },
-  });
+  const dayClosesQuery = useDayCloses();
 
-  const workTimeQuery = useFetch<WorkTimeDTO>({
-    fetcher: async () => {
-      const response = await VendorsAPI.fetchWorkTimeAPI();
-      return response.data.data;
-    },
-  });
+  const workTimeQuery = useWorkTime();
 
-  const daysListQuery = useFetch<WeekdayDTO[]>({
-    fetcher: async () => {
-      const response = await MasterAPI.fetchDaysListAPI();
-      return response.data.data;
-    },
-  });
+  const daysListQuery = useDaysList();
 
   const updateVendor = useCallback(async (payload: UpdateVendorDTO) => {
     await VendorsAPI.updateVendorAPI(payload);
@@ -225,7 +204,7 @@ const StorePageProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     dayClosesQuery.fetchFn();
     workTimeQuery.fetchFn();
-    daysListQuery.fetchFn();
+    daysListQuery.refetch();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

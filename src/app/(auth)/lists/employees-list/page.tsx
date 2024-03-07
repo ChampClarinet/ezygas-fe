@@ -1,5 +1,5 @@
 import { FC } from "react";
-import EmployeesListModule from "@/modules/EmployeesList";
+import EmployeesListModule from "@/modules/employees-list";
 
 const EmployeesListPage: FC = () => <EmployeesListModule />;
 

@@ -1,3 +1,5 @@
+import { FC } from "react";
+
 export interface HasBrands<T> {
   details: T[];
 }
@@ -28,3 +30,5 @@ export interface Timestamp {
 export type Nullable<T> = T | null;
 
 export type Optional<T> = T | undefined;
+
+export type FCWithMethods<Props = {}, Methods = {}> = FC<Props> & Methods;
