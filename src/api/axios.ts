@@ -61,6 +61,10 @@ const onErrorClientInterceptor = async (error: any) => {
     if (!newToken) {
       await logout();
       typeof window !== "undefined" && window.open("/login", "_self");
+    } else {
+      //set token
+      setCookie(USER_TOKEN_KEY, newToken);
+      originalRequest.headers.authorization = `Bearer ${newToken}`;
     }
     return axios(originalRequest);
   }
