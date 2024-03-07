@@ -2,8 +2,8 @@ import { FC, lazy } from "react";
 import { lazily } from "react-lazily";
 import clsx from "clsx";
 import { Control, Controller } from "react-hook-form";
-import { VendorForm } from "./form";
 
+import { VendorForm } from "./provider";
 const Input = lazy(() => import("@/components/common/input"));
 const { InputMask } = lazily(() => import("primereact/inputmask"));
 const NumericInput = lazy(() => import("@/components/common/numericinput"));
@@ -85,7 +85,8 @@ const Field: FC<FieldProps> = (props) => {
                 mode="currency"
                 currency="THB"
                 locale="th-TH"
-                type="number"
+                // type="number"
+                min={0}
               />
             ) : type == "number" ? (
               <NumericInput

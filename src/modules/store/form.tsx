@@ -1,40 +1,30 @@
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useContext, useMemo } from "react";
 import clsx from "clsx";
 import { ToggleButton } from "primereact/togglebutton";
-import { Controller, UseFormReturn } from "react-hook-form";
+import { Controller } from "react-hook-form";
 import { useBreakpoint } from "@cantabile/hooks";
-import { Vendor, WorkTime } from "@/api/vendors";
 import Checkbox from "@/components/common/checkbox";
 import TimePicker from "@/components/common/timepicker";
 import Textarea from "@/components/common/textarea";
 import * as regex from "@/constants/regex";
 import { useDaysList } from "@/queries/general";
 import { addressToDisplayAddress } from "@/utils";
-import Field, { FieldProps } from "./field";
 
-export interface VendorForm {
-  name_th: string;
-  tel: string;
-  service_charge: string;
-  is_juristic: boolean;
-  branch: string;
-  tax_id: string;
-  receipt_footer_message: string;
-  dayCloses: string[];
-  workTime: WorkTime | null;
-}
-export interface VendorFormProps {
-  vendor: Vendor;
-  formHook: UseFormReturn<VendorForm, any>;
-}
-const Form: FC<VendorFormProps> = ({ formHook, vendor }) => {
+import Field, { FieldProps } from "./field";
+import { StorePageContext } from "./provider";
+
+const Form: FC = () => {
+  const { formHook, myVendor } = useContext(StorePageContext);
+  const vendor = myVendor!;
+
   const { days: daysList } = useDaysList();
+
   const {
     control,
     watch,
     setValue,
     formState: { errors },
-  } = formHook;
+  } = formHook!;
 
   const isSmall = useBreakpoint(700);
 
@@ -203,7 +193,7 @@ const Form: FC<VendorFormProps> = ({ formHook, vendor }) => {
                     onChange={(time) => onChange({ ...value, openOn: time })}
                   />
                 </div>
-                <div className={itemClasses}>
+                <div className={clsx(itemClasses, "mt-4")}>
                   <label>ถึง</label>
                   <TimePicker
                     value={closeOn}
