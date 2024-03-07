@@ -36,6 +36,15 @@ const DailyReviewModal: FC<DialyReviewProps> = (props) => {
 
   const useStocksProps = useStocksList({
     activeOnly: true,
+    onStockChanges: () => {
+      setEditedStock(
+        stocksList.map(({ id, price }) => ({
+          id,
+          price: "" + price,
+          oldPrice: price,
+        }))
+      );
+    },
   });
 
   const { stocksList, refetch: reloadStocks } = useStocksProps;
@@ -131,16 +140,6 @@ const DailyReviewModal: FC<DialyReviewProps> = (props) => {
     setFilteredStocks(filtered);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editedStocks, search]);
-
-  useEffect(() => {
-    setEditedStock(
-      stocksList.map(({ id, price }) => ({
-        id,
-        price: "" + price,
-        oldPrice: price,
-      }))
-    );
-  }, [stocksList]);
 
   useEffect(() => {
     if (isOpen) {

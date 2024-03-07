@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import MasterAPI, { BrandOrTypeMasterData } from "@/api/master";
 import StocksAPI, { ExistsStock, Stock } from "@/api/stock";
 import { uniq } from "@/utils";
@@ -7,9 +7,10 @@ import { useQuery } from ".";
 
 export interface UseStocksList {
   activeOnly?: boolean;
+  onStockChanges?: (stocks: Stock[]) => unknown;
 }
 export const useStocksList = (params: UseStocksList) => {
-  const { activeOnly = true } = params;
+  const { activeOnly = true, onStockChanges } = params;
 
   const fetchFn = useCallback(async () => {
     let response = await StocksAPI.fetchStocksList();
@@ -21,6 +22,9 @@ export const useStocksList = (params: UseStocksList) => {
     fetcher: fetchFn,
   });
 
+  useEffect(() => {
+    if (onStockChanges && data != null) onStockChanges(data);
+  }, [data, onStockChanges]);
   return {
     stocksList: data || [],
     error,
