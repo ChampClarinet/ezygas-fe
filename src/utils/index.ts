@@ -1,14 +1,6 @@
 import { Customer } from "@/api/customer";
 import { Address } from "@/api/vendors";
 
-/**
- * Typical delay function
- * @param ms time to delay, default is 3 seconds.
- */
-export const wait = async (ms = 3000) => {
-  await new Promise((r) => setTimeout(r, ms));
-};
-
 export const addressToDisplayAddress = ({
   subdistrict,
   district,

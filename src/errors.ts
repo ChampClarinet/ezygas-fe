@@ -33,3 +33,9 @@ export class TooManyRequestsAtOnceError extends Error {
     super("Too many requests at once");
   }
 }
+
+export class FetchAbortedError extends Error {
+  constructor(where?: string) {
+    super("Fetch aborted" + where ? `: ${where}` : "");
+  }
+}
