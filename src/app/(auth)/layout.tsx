@@ -11,6 +11,7 @@ import { setAccessToken } from "@/app/actions";
 import MainLayout from "@/components/globals/mainlayout";
 import { TokenExpiresError, UnauthorizedError } from "@/errors";
 import { User } from "@/types/user";
+import { logout } from "@/utils/auth";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -35,13 +36,20 @@ const AuthedPageLayout: FC<AuthedPageLayoutProps> = async ({ children }) => {
       await AuthAPI.verifyTokenAPIServerside(accessToken);
     } catch (error) {
       if (error instanceof TokenExpiresError) {
-        const refreshToken = cookie.get(REFRESH_TOKEN_KEY)?.value;
-        if (!refreshToken) throw new TokenExpiresError();
-        const { access: newToken } = await AuthAPI.refreshTokenAPIServerside(
-          refreshToken
-        );
-        setAccessToken(newToken);
-        accessToken = newToken;
+        try {
+          const refreshToken = cookie.get(REFRESH_TOKEN_KEY)?.value;
+          if (!refreshToken) throw new TokenExpiresError();
+          const { access: newToken } = await AuthAPI.refreshTokenAPIServerside(
+            refreshToken
+          );
+          setAccessToken(newToken);
+          accessToken = newToken;
+        } catch (error) {
+          if (error instanceof TokenExpiresError) {
+            logout();
+            redirect("/login");
+          }
+        }
       } else throw error;
     }
 

@@ -5,6 +5,7 @@ import {
   checkTokenIsExpiresServerside,
 } from "@/utils/auth";
 import AuthAPI from "./api/auth";
+import { TokenExpiresError } from "./errors";
 
 const publicRoutes = ["/login", "/register", "/pending"];
 
@@ -98,7 +99,9 @@ const handleAuthorizationCheck = async (
   const refreshToken = req.cookies.get(REFRESH_TOKEN_KEY)?.value;
 
   const newAccessToken = refreshToken
-    ? await doRefreshTokenServerside(refreshToken)
+    ? await doRefreshTokenServerside(refreshToken).catch(
+        (e) => e instanceof TokenExpiresError && null
+      )
     : null;
   if (!newAccessToken) {
     return {
