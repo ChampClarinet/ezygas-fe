@@ -1,5 +1,5 @@
 const colors = require("./src/tailwind/colors");
-const screens = require("./src/tailwind/screens");
+const screens = require("./src/tailwind/screens").screensPX;
 
 const config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
