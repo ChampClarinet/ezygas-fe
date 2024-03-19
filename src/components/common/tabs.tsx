@@ -20,6 +20,12 @@ const Tabs: FC<TabsProps> = (props) => {
         inkbar: { className: "bg-current" },
         navContainer: { className: "flex" },
         nextButton: { className: "bg-white" },
+        nav: {
+          className: "list-none",
+        },
+        panelContainer: {
+          className: "p-0",
+        },
       }}
     >
       {list.map((item, index) => {
