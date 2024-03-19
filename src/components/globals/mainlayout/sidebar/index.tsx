@@ -91,7 +91,7 @@ const Sidebar: FC<SidebarProps> = ({
 
   return (
     <SidebarComponent ref={sidebarRef}>
-      <MainMenu state={state}>
+      <MainMenu $state={state}>
         <div className={clsx("relative", "flex", "flex-col", "w-full")}>
           {menu.map(({ code, url, icon_src, display_text }, i) => {
             const isActive = i == activeMainMenuIndex;
@@ -156,7 +156,7 @@ const Sidebar: FC<SidebarProps> = ({
           />
         </div>
       </MainMenu>
-      <SubMenu state={state}>
+      <SubMenu $state={state}>
         {activeSubMenuList.map(({ code, display_text, url }) => {
           const isActive = activeSubMenu?.code === code;
           const onClick = () => router.push(url);

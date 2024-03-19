@@ -25,7 +25,7 @@ export const Sidebar = styled.div`
 `;
 
 export interface MenuControl {
-  state: MenuState;
+  $state: MenuState;
 }
 const translate0 = css`
   transform: translateX(0) !important;
@@ -62,7 +62,7 @@ export const MainMenu = styled.div<MenuControl>`
     height: calc(100% - 120px);
   }
 
-  ${({ state }) => (["MENU", "SUBMENU"].includes(state) ? translate0 : "")}
+  ${({ $state: state }) => (["MENU", "SUBMENU"].includes(state) ? translate0 : "")}
 
   .menu-item {
     img {
@@ -118,14 +118,14 @@ export const SubMenu = styled.div<MenuControl>`
   display: flex;
   flex-direction: column;
   transform: translateX(
-    ${({ state }) => calculateTranslate(state, -330, -190, -0)}px
+    ${({ $state: state }) => calculateTranslate(state, -330, -190, -0)}px
   );
 
   @media (min-width: 768px) {
     left: 100px;
     width: 200px;
     transform: translateX(
-      ${({ state }) => calculateTranslate(state, -300, -200, 0)}px
+      ${({ $state: state }) => calculateTranslate(state, -300, -200, 0)}px
     );
     height: calc(100% - 80px);
   }
@@ -134,7 +134,7 @@ export const SubMenu = styled.div<MenuControl>`
     left: 110px;
     width: 220px;
     transform: translateX(
-      ${({ state }) => calculateTranslate(state, -330, -220, 0)}px
+      ${({ $state: state }) => calculateTranslate(state, -330, -220, 0)}px
     );
     height: calc(100% - 90px);
   }
@@ -143,7 +143,7 @@ export const SubMenu = styled.div<MenuControl>`
     left: 120px;
     width: 230px;
     transform: translateX(
-      ${({ state }) => calculateTranslate(state, -350, -230, 0)}px
+      ${({ $state: state }) => calculateTranslate(state, -350, -230, 0)}px
     );
     height: calc(100% - 120px);
   }

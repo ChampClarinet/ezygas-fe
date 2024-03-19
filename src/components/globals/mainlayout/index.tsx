@@ -24,7 +24,7 @@ const MainLayout: FC<MainLayoutProps> = (props) => {
     <div className="main-layout flex flex-col min-h-screen w-full">
       <Navbar />
       <Sidebar menus={menus} />
-      <Main state={state}>{children}</Main>
+      <Main $state={state}>{children}</Main>
     </div>
   );
 };
