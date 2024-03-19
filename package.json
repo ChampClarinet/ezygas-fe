@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@cantabile/date-helper": "^1.3.1",
+    "@cantabile/date-helper": "^1.3.2",
     "@cantabile/hooks": "^1.1.2",
     "axios": "^0.24.0",
     "clsx": "^1.1.1",
