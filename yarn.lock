@@ -19,10 +19,15 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
-"@cantabile/date-helper@^1.0.1", "@cantabile/date-helper@^1.3.1":
+"@cantabile/date-helper@^1.0.1":
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/@cantabile/date-helper/-/date-helper-1.3.1.tgz#c13e3725e4ed8d99c0b48117fa4b142558165a7a"
   integrity sha512-PI/GGQ2smhKJQeg+nZDUk/SNXC8pZkU4Msfo2y8eEZoUa5eQIyDycbH+6LJkgiQA24vBRQt4hkNK002bjmC8BQ==
+
+"@cantabile/date-helper@^1.3.2":
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/@cantabile/date-helper/-/date-helper-1.3.2.tgz#23af044f6aaf0b57c502e2d0595c90d794541b87"
+  integrity sha512-c0Iz6qCAyHhtAY6e8MzvKwZQkdayOI3ZD8nn17GkHtkFHDQ5JCRfqYZe0pSVx0dPMhAIBNaKmFS01JJbAPvzGQ==
 
 "@cantabile/hooks@^1.1.2":
   version "1.1.2"
