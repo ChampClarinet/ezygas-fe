@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import MasterAPI, { BrandOrTypeMasterData } from "@/api/master";
 import StocksAPI, { ExistsStock, Stock } from "@/api/stock";
 import { uniq } from "@/utils";

@@ -73,7 +73,6 @@ export const TanksManagementProvider: FC<PropsWithChildren> = ({
   const formProps = useForm<StockForm>({
     defaultValues: { items: [], toFill: [] },
   });
-  console.log('states', formProps.watch())
 
   const [search, setSearch] = useState("");
   const [stocks, setStocks] = useState<Stock[]>([]);
