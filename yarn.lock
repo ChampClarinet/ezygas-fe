@@ -24,10 +24,10 @@
   resolved "https://registry.yarnpkg.com/@cantabile/date-helper/-/date-helper-1.3.1.tgz#c13e3725e4ed8d99c0b48117fa4b142558165a7a"
   integrity sha512-PI/GGQ2smhKJQeg+nZDUk/SNXC8pZkU4Msfo2y8eEZoUa5eQIyDycbH+6LJkgiQA24vBRQt4hkNK002bjmC8BQ==
 
-"@cantabile/date-helper@^1.3.2":
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/@cantabile/date-helper/-/date-helper-1.3.2.tgz#23af044f6aaf0b57c502e2d0595c90d794541b87"
-  integrity sha512-c0Iz6qCAyHhtAY6e8MzvKwZQkdayOI3ZD8nn17GkHtkFHDQ5JCRfqYZe0pSVx0dPMhAIBNaKmFS01JJbAPvzGQ==
+"@cantabile/date-helper@^1.3.3":
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/@cantabile/date-helper/-/date-helper-1.3.3.tgz#77c9964be0a7d1f348bcce2fd72bcf94f9d523f5"
+  integrity sha512-g2mESPySDeRKzagDCxnNFhSouVazUtUWvhErvqZg4On8GtJs5gi2ROYsGMFJi+V6S41rTTfjx/FfXTbnMLrp0A==
 
 "@cantabile/hooks@^1.1.2":
   version "1.1.2"
