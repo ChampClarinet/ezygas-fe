@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { Dropdown } from "primereact/dropdown";
 import { Image } from "primereact/image";
 import { Controller } from "react-hook-form";
+import { wait } from "@cantabile/hooks";
 import Button from "@/components/common/button";
 import Input from "@/components/common/input";
 import Password from "@/components/common/password";
 import { useToastContext } from "@/hooks/toast";
 import { RegisterDTO } from "@/types/user";
-import { addressToDisplayAddress, wait } from "@/utils";
+import { addressToDisplayAddress } from "@/utils";
 import { register } from "@/utils/auth";
 import { resolveErrorResponse } from "@/utils/error";
 

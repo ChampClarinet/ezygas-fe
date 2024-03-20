@@ -14,19 +14,28 @@ export interface AutocompleteProps<T = any> extends AP {
    * Field in each listOfHint item to pick to search
    * leave null if list type is string
    */
-  fieldToPick?: keyof T;
+  fieldToPick?: keyof T | (keyof T)[];
 }
+/**
+ * for values and onChange, use actual object, no need to map
+ */
 const Autocomplete = <T,>(props: AutocompleteProps<T>) => {
   const { listOfHint, fieldToPick } = props;
-  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<T[]>([]);
 
   const search = useCallback(
     (e: AutoCompleteCompleteEvent) => {
       setSuggestions(
         listOfHint.filter((item) => {
-          const value = fieldToPick ? item[fieldToPick] : item;
-          if (value == null) return false;
-          return value.toString().toLowerCase().includes(e.query.toLowerCase());
+          const ftp = Array.isArray(fieldToPick) ? fieldToPick : [fieldToPick];
+          return ftp.some((f) => {
+            const valueToCheck = f ? item[f] : f;
+            if (valueToCheck == null) return false;
+            return valueToCheck
+              .toString()
+              .toLowerCase()
+              .includes(e.query.toLowerCase());
+          });
         })
       );
     },

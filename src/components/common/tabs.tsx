@@ -9,22 +9,23 @@ export interface TabItem {
 export interface TabsProps {
   list: TabItem[];
   scrollable?: boolean;
+  noBackground?: boolean;
 }
 const Tabs: FC<TabsProps> = (props) => {
-  const { list, scrollable = false } = props;
+  const { list, scrollable = false, noBackground = false } = props;
 
   return (
     <TabView
       scrollable={scrollable}
       pt={{
         inkbar: { className: "bg-current" },
-        navContainer: { className: "flex" },
-        nextButton: { className: "bg-white" },
+        navContainer: { className: clsx("flex") },
+        nextButton: { className: clsx(!noBackground && "bg-white") },
         nav: {
-          className: "list-none",
+          className: clsx("list-none", noBackground && "bg-transparent"),
         },
         panelContainer: {
-          className: "p-0",
+          className: clsx("p-0", noBackground && "bg-transparent"),
         },
       }}
     >
@@ -38,6 +39,9 @@ const Tabs: FC<TabsProps> = (props) => {
                 return {
                   className: clsx(isActive && "text-current", "font-sukhumvit"),
                 };
+              },
+              headerAction: {
+                className: clsx(noBackground && "bg-transparent"),
               },
             }}
             {...item.panelProps}
