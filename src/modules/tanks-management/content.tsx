@@ -17,11 +17,7 @@ const FillTab = lazy(() => import("./fill.tab"));
 const Content: FC = () => {
   const context = useContext(TanksManagementContext);
   const { search, setSearch, formProps, stocks } = context;
-  const {
-    formState: { dirtyFields },
-    watch,
-  } = formProps!;
-  const data = watch();
+  const { watch } = formProps!;
   const { state, open, close } = useModalState();
   const toast = useToastContext();
 
