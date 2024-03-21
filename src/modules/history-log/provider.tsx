@@ -7,9 +7,10 @@ import {
   useEffect,
   useState,
 } from "react";
+import axios from "axios";
 import DateHelper from "@cantabile/date-helper";
-import { BalanceGroupedByDate, BalanceType } from "@/api/balance";
-import { useBalancesList } from "@/queries/history";
+import BalanceAPI, { BalanceGroupedByDate, BalanceType } from "@/api/balance";
+import { resolveErrorResponse } from "@/utils/error";
 
 const today = DateHelper.now();
 const fiveDaysBefore = new DateHelper(today.toMs() - DateHelper.timeDelta(5));
@@ -27,9 +28,6 @@ export interface HistoryLogContextType {
   balancesList: BalanceGroupedByDate[];
   typeCodes: (string | number)[];
   isLoading: boolean;
-  isValidating: boolean;
-  refetch: () => unknown;
-  error: boolean;
   initialize: () => unknown;
 }
 
@@ -46,9 +44,6 @@ const HistoryLogContext = createContext<HistoryLogContextType>({
   balancesList: [],
   typeCodes: [],
   isLoading: true,
-  isValidating: false,
-  refetch: () => {},
-  error: false,
   initialize: () => {},
 });
 
@@ -57,45 +52,65 @@ export const HistoryLogProvider: FC<PropsWithChildren> = ({ children }) => {
   const [to, _setTo] = useState(today);
   const [type, setType] = useState<BalanceType>(undefined);
   const [completeOnly, setCompleteOnly] = useState(false);
-  const { balancesList, typeCodes, isLoading, isValidating, refetch, error } =
-    useBalancesList({
-      from: from.joinDateTuple(),
-      to: to.joinDateTuple(),
-      type,
-      completed_only: completeOnly,
-    });
+  const [balancesList, setBalancesList] = useState<BalanceGroupedByDate[]>([]);
+  const [typeCodes, setTypeCodes] = useState<(string | number)[]>([]);
+  const [isLoading, setLoading] = useState(false);
+
+  const refetch = useCallback(
+    async (
+      from: DateHelper,
+      to: DateHelper,
+      type: BalanceType,
+      completeOnly: boolean
+    ) => {
+      setLoading(true);
+      try {
+        const {
+          data: { type_codes, data },
+        } = await BalanceAPI.fetchBalance({
+          from: from.joinDateTuple(),
+          to: to.joinDateTuple(),
+          type,
+          completed_only: completeOnly,
+        });
+        setBalancesList(data);
+        setTypeCodes(type_codes);
+      } catch (error) {
+        if (!axios.isCancel(error)) resolveErrorResponse(error);
+      }
+      setLoading(false);
+    },
+    []
+  );
+
   const initialize = useCallback(async () => {
     _setFrom(fiveDaysBefore);
     _setTo(today);
     setType(undefined);
     setCompleteOnly(false);
-    await refetch();
-  }, [refetch]);
-
-  const onFiltersChange = useCallback(() => {
-    refetch();
+    await refetch(fiveDaysBefore, today, undefined, false);
   }, [refetch]);
 
   const setFrom = useCallback(
     (f: DateHelper) => {
       if (DateHelper.isSameDay(f, from)) return;
-      setFrom(f);
-      onFiltersChange();
+      _setFrom(f);
+      refetch(f, to, type, completeOnly);
     },
-    [from, onFiltersChange]
+    [completeOnly, from, refetch, to, type]
   );
 
   const setTo = useCallback(
     (t: DateHelper) => {
       if (DateHelper.isSameDay(t, to)) return;
       _setTo(t);
-      onFiltersChange();
+      refetch(from, t, type, completeOnly);
     },
-    [onFiltersChange, to]
+    [completeOnly, from, refetch, to, type]
   );
 
   useEffect(() => {
-    onFiltersChange();
+    refetch(from, to, type, completeOnly);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, completeOnly]);
   return (
@@ -113,9 +128,6 @@ export const HistoryLogProvider: FC<PropsWithChildren> = ({ children }) => {
         balancesList,
         typeCodes,
         isLoading,
-        isValidating,
-        refetch,
-        error,
         initialize,
       }}
     >

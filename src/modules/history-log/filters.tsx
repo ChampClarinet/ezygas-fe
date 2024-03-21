@@ -14,7 +14,6 @@ import HistoryLogContext from "./provider";
 const Filters: FC = () => {
   const context = useContext(HistoryLogContext);
   const {
-    refetch,
     setFrom,
     setTo,
     setType,
@@ -24,13 +23,7 @@ const Filters: FC = () => {
     type,
     completeOnly,
     isLoading,
-    isValidating,
   } = context;
-
-  const loading = useMemo(
-    () => isLoading || isValidating,
-    [isLoading, isValidating]
-  );
 
   const onIncomeClick = useCallback(() => {
     let newType: BalanceType;
@@ -77,7 +70,7 @@ const Filters: FC = () => {
   }, [setType, type]);
 
   const handleDownloadCSV = useCallback(async () => {
-    if (loading) return;
+    if (isLoading) return;
     let csvData: string[][] = [];
     //? Fetch
     SweetAlert.showLoading();
@@ -105,7 +98,7 @@ const Filters: FC = () => {
     //? Download
     const filename = `balance-log (${from} to ${to}).csv`;
     return parseToCSV(csvData, filename);
-  }, [completeOnly, from, loading, to, type]);
+  }, [completeOnly, from, isLoading, to, type]);
 
   return (
     <div
